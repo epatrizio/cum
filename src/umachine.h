@@ -53,9 +53,6 @@ typedef struct _universal_machine {
    int_vector free_id;
 } universal_machine;
 
-universal_machine *um_create();
-void um_destroy(universal_machine*);
-void um_load_word(universal_machine*, uint32_t);
-void um_exec(universal_machine*);
+void um_start(char*);
 
 #endif

@@ -187,5 +187,26 @@ void um_exec(universal_machine *um)
     }
 }
 
+void um_start(char *file_name)
+{
+    FILE* in_file = fopen(file_name, "rb");
+    if (!in_file) {
+        perror("[error] Universal Machine input file fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    universal_machine *um = um_create();
+    uint32_t word;
+
+    while (fread(&word,sizeof(word),1,in_file) != 0)
+    {
+        um_load_word(um, word);
+    }
+    fclose(in_file);
+
+    um_exec(um);
+    um_destroy(um);
+}
+
 vector_init_fct(uint32_t)
 vector_init_fct(memory_component)
