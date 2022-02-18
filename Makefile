@@ -5,7 +5,7 @@ compile:
 	-lm -L./libs -lvector
 
 run:
-	./$(EXE)
+	./$(EXE) sandmark.umz
 
 clean:
 	rm -rf *.o $(EXE)
