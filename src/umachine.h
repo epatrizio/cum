@@ -22,15 +22,15 @@ enum op_code {
 };
 
 typedef struct _base_command {
-   int op;
-   int a;
-   int b;
-   int c;
+   unsigned short op;
+   unsigned int a;
+   unsigned int b;
+   unsigned int c;
 } base_command;
 
 typedef struct _load_command {
-   int r;
-   int value;
+   unsigned int r;
+   uint32_t value;
 } load_command;
 
 typedef struct _instruction {
@@ -41,7 +41,7 @@ typedef struct _instruction {
    } inst;
 } instruction;
 
-// Mémoire = Vector de vector de uint32_t (qui sont les mots de base à décoder)
+// Memory model = a uint32_t vector of vector. uint32_t is the word type.
 vector_init(uint32_t)
 typedef uint32_t_vector memory_component;
 vector_init(memory_component)
@@ -49,7 +49,7 @@ vector_init(memory_component)
 typedef struct _universal_machine {
    memory_component_vector memory;
    uint32_t reg[8];
-   int pc;
+   unsigned int pc;
    int_vector free_id;
 } universal_machine;
 
