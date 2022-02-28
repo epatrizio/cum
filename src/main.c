@@ -9,8 +9,10 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc > 1)
+    if (argc > 1) {
         um_start(argv[1]);
+        exit(EXIT_SUCCESS);
+    }
     else {
         printf("[error] No input file for the Universal Machine, exit!\n");
         exit(EXIT_FAILURE);

@@ -49,7 +49,7 @@ instruction inst_create_from_word(uint32_t word)
     return inst;
 }
 
-void inst_exec(universal_machine *um, instruction inst)
+bool inst_exec(universal_machine *um, instruction inst)
 {
     if (inst.is_base_cmd) {
         int a = inst.inst.base_cmd.a;
@@ -78,7 +78,7 @@ void inst_exec(universal_machine *um, instruction inst)
                 um->reg[a] = ~(um->reg[b] & um->reg[c]);
                 break;
             case STOP:
-                return;
+                return false;
             case ALLOC: ;
                 uint32_t_vector mem_elt = uint32_t_vector_create(um->reg[c]);
                 for (unsigned int i=0 ; i<um->reg[c] ; i++)
@@ -102,22 +102,18 @@ void inst_exec(universal_machine *um, instruction inst)
             case OUTPUT:
                 printf("%c", um->reg[c]);
                 break;
-            case INPUT:
-                printf("Enter an integer: ");
-                int input;
-                scanf("%d", &input);
-                um->reg[c] = input;     // todo EOF
+            case INPUT: ;
+                char input;
+                scanf("%c", &input);
+                um->reg[c] = input;
                 break;
             case LOAD_EXEC:
                 if (um->reg[b] != 0) {
                     uint32_t_vector source = memory_component_vector_get(um->memory, um->reg[b]);
                     size_t s_size = uint32_t_vector_size(source);
                     uint32_t_vector dest = uint32_t_vector_create(MEMORY_INITIAL_SIZE);
-                    for (unsigned int i = 0 ; i<s_size ; i++) {
-                        uint32_t source_val = uint32_t_vector_get(source, i);
-                        uint32_t dest_val;
-                        memcpy(&dest_val, &source_val, sizeof(uint32_t));
-                        uint32_t_vector_add(dest, uint32_t_vector_size(dest), dest_val);
+                    for (unsigned int i=0 ; i<s_size ; i++) {
+                        uint32_t_vector_add(dest, uint32_t_vector_size(dest), uint32_t_vector_get(source, i));
                     }
                     memory_component_vector_set(um->memory, 0, dest);
                 }
@@ -131,6 +127,8 @@ void inst_exec(universal_machine *um, instruction inst)
     else {
         um->reg[inst.inst.load_cmd.r] = inst.inst.load_cmd.value;
     }
+
+    return true;
 }
 
 universal_machine *um_create()
@@ -141,6 +139,9 @@ universal_machine *um_create()
 
     universal_machine *um = (universal_machine *) malloc(sizeof(universal_machine));
     um->memory = mem;
+    for (short i=0 ; i<8 ; i++)
+        um->reg[i] = 0;
+    um->pc = 0;
     um->free_id = int_vector_create(0);
 
     return um;
@@ -162,14 +163,12 @@ void um_load_word(universal_machine *um, uint32_t word)
 
 void um_exec(universal_machine *um)
 {
-    uint32_t_vector mem_elt = memory_component_vector_get(um->memory, 0);
-    size_t nb_instr = uint32_t_vector_size(mem_elt);
-
-    while (um->pc < nb_instr) {
-        uint32_t word = uint32_t_vector_get(mem_elt, um->pc);
+    bool exec_in_progress = true;
+    while (exec_in_progress) {
+        uint32_t word = uint32_t_vector_get(memory_component_vector_get(um->memory, 0), um->pc);
         instruction inst = inst_create_from_word(word);
         um->pc++;
-        inst_exec(um, inst);
+        exec_in_progress = inst_exec(um, inst);
     }
 }
 
@@ -199,7 +198,9 @@ void um_start(char *file_name)
     fclose(in_file);
 
     um_exec(um);
+    printf("Execution complete!\n");
     um_destroy(um);
+    printf("Free memory.\n");
 }
 
 vector_init_fct(uint32_t)

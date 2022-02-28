@@ -29,14 +29,14 @@
     vector_struct(T)        \
     vector_create_sign(T)
 
-#define vector_create_fct(T)                                    \
-    T##_vector T##_vector_create(size_t capacity) {             \
-        size_t cap = (capacity > 0) ? capacity : MIN_CAPACITY;  \
-        T##_vector v = malloc(sizeof(T##_vector));              \
-        v->elts = malloc(cap * sizeof(T));                      \
-        v->capacity = cap;                                      \
-        v->size = 0;                                            \
-        return v;                                               \
+#define vector_create_fct(T)                                        \
+    T##_vector T##_vector_create(size_t capacity) {                 \
+        size_t cap = (capacity > 0) ? capacity : MIN_CAPACITY;      \
+        T##_vector v = malloc(sizeof(struct T##_resizable_array));  \
+        v->elts = malloc(cap * sizeof(T));                          \
+        v->capacity = cap;                                          \
+        v->size = 0;                                                \
+        return v;                                                   \
     }
 
 #define vector_destroy_fct(T)               \
