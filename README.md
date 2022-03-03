@@ -12,3 +12,10 @@ Vectors are used in a real and advanced context, which allowed me to discover an
 
 This current version (first full version) works.\
 Basic tests provided with the subject (sandmark.umz file) pass.
+
+### Next steps
+
+* codex.umz file execution pass to!
+* bootstrapping pass to! It's fun because the um.um file is a more advanced UM implementation which execute itself in our implementation!
+
+See documentation above (topic link) for the decryption key (codex.umz) and the bootstrapping initialization.
